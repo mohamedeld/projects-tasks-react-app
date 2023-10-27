@@ -10,6 +10,7 @@ function App() {
   const [projectState, setProjectState] = useState({
     selectedProjectId: undefined,
     projects: [],
+    tasks:[]
   });
   const handleStartAddProject = () => {
     setProjectState((prevState) => {
@@ -19,6 +20,30 @@ function App() {
       };
     });
   };
+
+  const handleAddTask = (taskData)=>{
+    setProjectState(prevState=>{
+      const taskId = uuidv4();
+      const newTask = {
+        task:taskData,
+        projectId:prevState.selectedProjectId,
+        id:taskId
+      }
+      return {
+        ...prevState,
+        tasks:[...prevState.tasks,newTask]
+      }
+    })
+  }
+
+  const handleDeleteTask = (id)=>{
+    setProjectState(prevState=>{
+      return{
+        ...prevState,
+        tasks:prevState.tasks.filter(task=> task.id !== id)
+      }
+    })
+  }
 
   const handleSelectProject = (id)=>{
     setProjectState((prevState) => {
@@ -60,8 +85,11 @@ function App() {
       }
     })
   }
-  const selectProject = projectState.projects.find(project=> project.id === projectState.selectedProjectId)
-  let content = <SelectedProject project={selectProject} onDeleteProject={handleDelete}/>;
+  console.log(projectState)
+  const selectProject = projectState.projects.find(project=> project.id === projectState.selectedProjectId);
+
+  let content = <SelectedProject project={selectProject} onDeleteProject={handleDelete} onAddTask={handleAddTask} onDeleteTask={handleDeleteTask} tasks={projectState.tasks}/>;
+
   if(projectState.selectedProjectId === null){
     content = <NewProject onAdd={handleAddProject} onCancel={handleCancel}/>
   }else if(projectState.selectedProjectId === undefined){
